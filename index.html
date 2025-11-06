@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your Store Checkout</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="https://myzer-checkout-builder.netlify.app/client.css" />
+    <!-- Tailwind-in-browser (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+
+    <!-- Facebook Pixel: load once -->
+    <script>
+      (function(f,b,e,v,n,t,s){
+        if(f.fbq) return;
+        n=f.fbq=function(){ n.callMethod ? n.callMethod.apply(n,arguments) : n.queue.push(arguments) };
+        if(!f._fbq) f._fbq=n; n.push=n; n.loaded=!0; n.version='2.0';
+        n.queue=[]; t=b.createElement(e); t.async=!0; t.src=v;
+        s=b.getElementsByTagName(e)[0]; s.parentNode.insertBefore(t,s);
+      })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+      fbq('init', '1840082302833186');
+      fbq('track', 'PageView');
+      window.XPAY_EMBED = Object.assign(window.XPAY_EMBED || {}, { pixelId: '1840082302833186' });
+    </script>
+
+    <noscript>
+      <img height="1" width="1" style="display:none"
+           src="https://www.facebook.com/tr?id=1840082302833186&ev=PageView&noscript=1"/>
+    </noscript>
+  </head>
+  <body>
+    <!-- Embed container -->
+    <div id="xpay-checkout"
+         data-api-base="https://checkout-builder-backend.vercel.app/api"
+         data-plan-id="690c796731ba931285e347b7"
+         data-checkout-layout="modern"></div>
+
+    <!-- Widget JS -->
+    <script src="https://myzer-checkout-builder.netlify.app/xpay-embed.min.js"></script>
+  </body>
+</html>
