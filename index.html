@@ -6,8 +6,8 @@
     <title>Your Store Checkout</title>
     <link rel="icon" href="data:,">
     <link rel="stylesheet" href="https://myzer-checkout-builder.netlify.app/client.css" />
-    <!-- Tailwind-in-browser (optional) -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
+    <!-- Tailwind-in-browser (removed defer to prevent load conflicts) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     <!-- Facebook Pixel: load once -->
     <script>
@@ -27,15 +27,128 @@
       <img height="1" width="1" style="display:none"
            src="https://www.facebook.com/tr?id=1840082302833186&ev=PageView&noscript=1"/>
     </noscript>
+
+    <style>
+      /* Loading state styles */
+      .xpay-loading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 400px;
+        padding: 2rem;
+      }
+      .xpay-spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #3498db;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+      .xpay-error {
+        background: #fee;
+        border: 1px solid #fcc;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 2rem;
+        text-align: center;
+      }
+      .xpay-error h3 {
+        color: #c00;
+        margin-bottom: 0.5rem;
+      }
+    </style>
   </head>
   <body>
-    <!-- Embed container -->
+    <!-- Embed container with loading state -->
     <div id="xpay-checkout"
          data-api-base="https://checkout-builder-backend.vercel.app/api"
          data-plan-id="690c796731ba931285e347b7"
-         data-checkout-layout="modern"></div>
+         data-checkout-layout="modern">
+      <!-- Loading fallback UI -->
+      <div class="xpay-loading">
+        <div class="xpay-spinner"></div>
+        <p style="margin-top: 1rem; color: #666;">Loading checkout...</p>
+      </div>
+    </div>
 
-    <!-- Widget JS -->
-    <script src="https://myzer-checkout-builder.netlify.app/xpay-embed.min.js"></script>
+    <!-- Widget JS with error handling -->
+    <script src="https://myzer-checkout-builder.netlify.app/xpay-embed.min.js" 
+            onerror="handleScriptError()"></script>
+
+    <!-- Debugging and error handling script -->
+    <script>
+      // Error handler for failed script loading
+      function handleScriptError() {
+        console.error('Failed to load xpay-embed.min.js');
+        showError('Failed to load checkout widget. Please refresh the page.');
+      }
+
+      // Display error message to user
+      function showError(message) {
+        const container = document.getElementById('xpay-checkout');
+        if (container) {
+          container.innerHTML = `
+            <div class="xpay-error">
+              <h3>Unable to Load Checkout</h3>
+              <p>${message}</p>
+              <button onclick="location.reload()" 
+                      style="margin-top: 1rem; padding: 0.5rem 1rem; 
+                             background: #3498db; color: white; border: none; 
+                             border-radius: 4px; cursor: pointer;">
+                Retry
+              </button>
+            </div>
+          `;
+        }
+      }
+
+      // Wait for widget to initialize
+      window.addEventListener('load', function() {
+        console.log('Page loaded');
+        console.log('Widget container:', document.getElementById('xpay-checkout'));
+        console.log('XPAY_EMBED config:', window.XPAY_EMBED);
+
+        // Set timeout to detect if widget fails to load
+        setTimeout(function() {
+          const container = document.getElementById('xpay-checkout');
+          const loadingState = container.querySelector('.xpay-loading');
+          
+          // If loading state still visible after 10 seconds, show error
+          if (loadingState && loadingState.offsetParent !== null) {
+            console.error('Widget initialization timeout');
+            showError('Checkout is taking longer than expected. Please check your connection and try again.');
+          }
+        }, 10000);
+
+        // Check if widget script loaded
+        if (typeof window.XPayEmbed === 'undefined' && typeof window.initXPayCheckout === 'undefined') {
+          setTimeout(function() {
+            if (typeof window.XPayEmbed === 'undefined' && typeof window.initXPayCheckout === 'undefined') {
+              console.error('XPay widget not initialized');
+              showError('Checkout widget failed to initialize. Please contact support.');
+            }
+          }, 3000);
+        }
+      });
+
+      // Network error detection
+      window.addEventListener('error', function(e) {
+        if (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK') {
+          console.error('Resource failed to load:', e.target.src || e.target.href);
+        }
+      }, true);
+
+      // API error detection (if widget exposes errors)
+      window.addEventListener('xpay-error', function(e) {
+        console.error('XPay Error:', e.detail);
+        showError('An error occurred while loading the checkout. Please try again.');
+      });
+    </script>
   </body>
 </html>
