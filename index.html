@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Your Store Checkout</title>
     <link rel="icon" href="data:,">
-    <link rel="stylesheet" href="https://myzer-checkout-builder.netlify.app/client.css" />
-    <!-- Tailwind-in-browser -->
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/maheshraowagh/xpay-assets@v1.0.0/xpay-embed.v1.0.0.min.js/client.css" />
+    <!-- Tailwind-in-browser (optional) -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4" defer></script>
 
     <!-- Facebook Pixel: load once -->
     <script>
@@ -27,125 +27,15 @@
       <img height="1" width="1" style="display:none"
            src="https://www.facebook.com/tr?id=1840082302833186&ev=PageView&noscript=1"/>
     </noscript>
-
-    <style>
-      /* Loading state styles */
-      .xpay-loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        min-height: 400px;
-        padding: 2rem;
-      }
-      .xpay-spinner {
-        border: 4px solid #f3f3f3;
-        border-top: 4px solid #3498db;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-      }
-      @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-      }
-      .xpay-error {
-        background: #fee;
-        border: 1px solid #fcc;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin: 2rem;
-        text-align: center;
-      }
-      .xpay-error h3 {
-        color: #c00;
-        margin-bottom: 0.5rem;
-      }
-    </style>
   </head>
   <body>
-    <!-- Embed container with loading state -->
+    <!-- Embed container -->
     <div id="xpay-checkout"
          data-api-base="https://checkout-builder-backend.vercel.app/api"
-         data-plan-id="690c796731ba931285e347b7"
-         data-checkout-layout="modern">
-      <!-- Loading fallback UI -->
-      <div class="xpay-loading">
-        <div class="xpay-spinner"></div>
-        <p style="margin-top: 1rem; color: #666;">Loading checkout...</p>
-      </div>
-    </div>
+         data-plan-id="690d9e99f3add788b0a6d75e"
+         data-checkout-layout="modern"></div>
 
-    <!-- Widget JS with error handling -->
-    <script src="https://myzer-checkout-builder.netlify.app/xpay-embed.min.js" 
-            onerror="handleScriptError()"></script>
-
-    <!-- Minimal debugging script -->
-    <script>
-      // Error handler for failed script loading
-      function handleScriptError() {
-        console.error('Failed to load xpay-embed.min.js');
-        showError('Failed to load checkout widget. Please refresh the page.');
-      }
-
-      // Display error message to user
-      function showError(message) {
-        const container = document.getElementById('xpay-checkout');
-        if (container) {
-          container.innerHTML = `
-            <div class="xpay-error">
-              <h3>Unable to Load Checkout</h3>
-              <p>${message}</p>
-              <button onclick="location.reload()" 
-                      style="margin-top: 1rem; padding: 0.5rem 1rem; 
-                             background: #3498db; color: white; border: none; 
-                             border-radius: 4px; cursor: pointer;">
-                Retry
-              </button>
-            </div>
-          `;
-        }
-      }
-
-      // Basic monitoring for development
-      window.addEventListener('load', function() {
-        console.log('Page loaded');
-        console.log('Widget container:', document.getElementById('xpay-checkout'));
-        console.log('XPAY_EMBED config:', window.XPAY_EMBED);
-
-        // Monitor for DOM changes in the checkout container
-        const container = document.getElementById('xpay-checkout');
-        const observer = new MutationObserver(function(mutations) {
-          mutations.forEach(function(mutation) {
-            if (mutation.addedNodes.length > 0) {
-              console.log('Widget content updated');
-              // Widget has rendered - remove loading state if still present
-              const loadingState = container.querySelector('.xpay-loading');
-              if (loadingState && mutation.addedNodes.length > 1) {
-                loadingState.remove();
-              }
-            }
-          });
-        });
-
-        observer.observe(container, { childList: true, subtree: true });
-
-        // Timeout fallback - if loading persists too long
-        setTimeout(function() {
-          const loadingState = container.querySelector('.xpay-loading');
-          if (loadingState && loadingState.offsetParent !== null) {
-            console.warn('Widget taking longer than expected to render');
-          }
-        }, 10000);
-      });
-
-      // Network error detection
-      window.addEventListener('error', function(e) {
-        if (e.target.tagName === 'SCRIPT' || e.target.tagName === 'LINK') {
-          console.error('Resource failed to load:', e.target.src || e.target.href);
-        }
-      }, true);
-    </script>
+    <!-- Widget JS -->
+    <script src="https://cdn.jsdelivr.net/gh/maheshraowagh/xpay-assets@v1.0.0/xpay-embed.v1.0.0.min.js"></script>
   </body>
 </html>
